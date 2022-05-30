@@ -1,20 +1,23 @@
 package com.springboot.project.shelterpet.business.repository.entity;
 
+import com.springboot.project.shelterpet.model.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name="shelters_pets")
 public class SheltersPetDAO {
 
@@ -36,6 +39,10 @@ public class SheltersPetDAO {
     private String type;
 
     @Column(name="pet_gender")
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
+    public SheltersPetDAO(Long id) {
+        this.id = id;
+    }
 }

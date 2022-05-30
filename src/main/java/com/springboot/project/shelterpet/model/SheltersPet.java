@@ -2,6 +2,7 @@ package com.springboot.project.shelterpet.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -9,38 +10,42 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 @ApiModel(description= "Model of SheltersPet data")
 @Data
 @NoArgsConstructor
-@Component
-public class SheltersPet {
+@AllArgsConstructor
+public class SheltersPet implements Serializable {
 
-    @ApiModelProperty(notes = "Unique shelters pets id")
+    @ApiModelProperty(notes = "Unique shelter pet id")
     @Min(value = 1)
     @Max(value = Long.MAX_VALUE)
     @NonNull
     private Long id;
 
-    @ApiModelProperty(notes = "Shelters pets name")
-    @NonNull
+    @ApiModelProperty(notes = "Shelter pet name")
+    @NotEmpty
     @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message ="This field may contain only letters, numbers and spaces")
     private String name;
 
-    @ApiModelProperty(notes = "Shelters pets age")
+    @ApiModelProperty(notes = "Shelter pet age")
+    @Min(value = 0)
     @NonNull
     private Long age;
 
-    @ApiModelProperty(notes = "Pets registration date in a shelter")
-    @NonNull
+    @ApiModelProperty(notes = "Pet registration date in a shelter")
+    @NotEmpty
     private String registrationDate;
 
-    @ApiModelProperty(notes = "Shelters pets type")
-    @NonNull
+    @ApiModelProperty(notes = "Shelter pet type")
+    @NotEmpty
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message ="This field may contain only letters, numbers and spaces")
     private String type;
 
-    @ApiModelProperty(notes = "Shelters pets gender")
+    @ApiModelProperty(notes = "Shelter pet gender")
     @NonNull
-    private String gender;
+    private Gender gender;
 }
