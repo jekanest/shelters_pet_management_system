@@ -28,14 +28,14 @@ public class Config {
     private Docket appendTags(Docket docket) {
         return docket.tags(
                 new Tag(DescriptionVariables.SHELTERSPET,
-                        "Controller used to get, create, update and delete shelters pets data")
+                        "Controller used to get, create, update and delete shelter pet data")
         );
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Shelters pets management systems API")
-                .description("Simple shelters pets management systems API")
+                .title("Shelter pet management systems API")
+                .description("Simple shelter pet management systems API")
                 .version("1.0")
                 .build();
     }

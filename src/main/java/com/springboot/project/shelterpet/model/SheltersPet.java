@@ -6,10 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -27,7 +27,8 @@ public class SheltersPet implements Serializable {
     private Long id;
 
     @ApiModelProperty(notes = "Shelter pet name")
-    @NotEmpty
+    @NotBlank
+    @NonNull
     @Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message ="This field may contain only letters, numbers and spaces")
     private String name;
 
@@ -37,12 +38,14 @@ public class SheltersPet implements Serializable {
     private Long age;
 
     @ApiModelProperty(notes = "Pet registration date in a shelter")
-    @NotEmpty
+    @NotBlank
+    @NonNull
     private String registrationDate;
 
     @ApiModelProperty(notes = "Shelter pet type")
-    @NotEmpty
-    @Pattern(regexp = "^[a-zA-Z\\s]+$", message ="This field may contain only letters, numbers and spaces")
+    @NotBlank
+    @NonNull
+    @Pattern(regexp = "^[a-zA-Z\\s]+$", message ="This field may contain only letters and spaces")
     private String type;
 
     @ApiModelProperty(notes = "Shelter pet gender")

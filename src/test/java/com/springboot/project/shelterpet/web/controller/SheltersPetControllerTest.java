@@ -12,13 +12,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -30,29 +28,23 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SheltersPetController.class)
 class SheltersPetControllerTest {
 
-    public final static String URLPost = "/api/pets";
-    public final static String URLGet = "/api/";
-
+    public final static String URL1 = "/api/v2/pets";
+    public final static String URL2 = "/api/v2/pet";
 
     @Autowired
     private MockMvc mockMvc;
-
 
     @Autowired
     private SheltersPetController sheltersPetController;
 
     @MockBean
     private ShelterPetService shelterPetService;
-
-    @MockBean
-    private SheltersPetRepository sheltersPetRepository;
 
     private SheltersPet sheltersPet;
     private List<SheltersPet> sheltersPetList;
@@ -68,7 +60,7 @@ class SheltersPetControllerTest {
         when(shelterPetService.findAllSheltersPet()).thenReturn(sheltersPetList);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get(URLGet))
+                        .get(URL1))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(3)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
@@ -87,27 +79,32 @@ class SheltersPetControllerTest {
     @Test
     void getAllSheltersPetsEmptyDataTest() throws Exception{
         sheltersPetList.clear();
+
         when(shelterPetService.findAllSheltersPet()).thenReturn(sheltersPetList);
         mockMvc.perform(MockMvcRequestBuilders
-                        .get(URLGet))
+                        .get(URL1))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void postSheltersPetCorrectParametersTest() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(URLPost)
+                        .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(sheltersPet))
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(MockMvcResultHandlers.print());
+
+        verify(shelterPetService,times(1)).saveSheltersPet(sheltersPet);
     }
 
     @Test
     void postSheltersPetInvalidIdTest() throws Exception{
         sheltersPet.setId(-1L);
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(URLPost)
+                        .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(sheltersPet))
                         .accept(MediaType.APPLICATION_JSON))
@@ -117,8 +114,9 @@ class SheltersPetControllerTest {
     @Test
     void postSheltersPetInvalidNameTest() throws Exception{
         sheltersPet.setName("4t?");
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(URLPost)
+                        .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(sheltersPet))
                         .accept(MediaType.APPLICATION_JSON))
@@ -128,8 +126,9 @@ class SheltersPetControllerTest {
     @Test
     void postSheltersPetEmptyNameTest() throws Exception{
         sheltersPet.setName("");
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(URLPost)
+                        .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(sheltersPet))
                         .accept(MediaType.APPLICATION_JSON))
@@ -139,8 +138,9 @@ class SheltersPetControllerTest {
     @Test
     void postSheltersInvalidAgeTest() throws Exception{
         sheltersPet.setAge(-1L);
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(URLPost)
+                        .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(sheltersPet))
                         .accept(MediaType.APPLICATION_JSON))
@@ -150,8 +150,9 @@ class SheltersPetControllerTest {
     @Test
     void postSheltersPetEmptyRegistrationDateTest() throws Exception{
         sheltersPet.setRegistrationDate("");
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(URLPost)
+                        .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(sheltersPet))
                         .accept(MediaType.APPLICATION_JSON))
@@ -161,8 +162,9 @@ class SheltersPetControllerTest {
     @Test
     void postSheltersPetEmptyTypeTest() throws Exception{
         sheltersPet.setType("");
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(URLPost)
+                        .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(sheltersPet))
                         .accept(MediaType.APPLICATION_JSON))
@@ -172,32 +174,21 @@ class SheltersPetControllerTest {
     @Test
     void postSheltersPetInvalidTypeTest() throws Exception{
         sheltersPet.setType("12345");
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(URLPost)
+                        .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(sheltersPet))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
-//    @Test
-//    void postSheltersPetInvalidGenderTest() throws Exception{
-//        sheltersPet.setGender(null);
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .post(URLPost)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(asJsonString(sheltersPet))
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//    }
-
     @Test
     void getSheltersPetByCorrectIdTest() throws Exception {
-        Optional<SheltersPet> shelterPet = Optional.of(sheltersPet);
-        when(shelterPetService.findSheltersPetById(anyLong())).thenReturn(shelterPet);
+        when(shelterPetService.findSheltersPetById(1L)).thenReturn(Optional.of(sheltersPet));
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get(URLGet + "/1"))
+                        .get(URL2 + "/1"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Tom"))
@@ -208,80 +199,44 @@ class SheltersPetControllerTest {
                 .andExpect(status().isOk()).
                 andDo(MockMvcResultHandlers.print());
 
-        verify(shelterPetService, times(1)).findSheltersPetById(anyLong());
-
-
+        verify(shelterPetService, times(1)).findSheltersPetById(1L);
     }
 
     @Test
     void getSheltersPetByInvalidIdTest() throws Exception {
-//        Optional<SheltersPet> shelterPet = Optional.of(sheltersPet);
-//        shelterPet.get().setId(0L);
-//
-//        when(shelterPetService.findSheltersPetById(sheltersPet.getId())).thenReturn(Optional.empty());
-//
-//        ResultActions mvcResult = mockMvc.perform(MockMvcRequestBuilders
-//                        .get(URLGet + "/0")
-//                        .content(asJsonString(shelterPet))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isNotFound());
-//
-//        verify(shelterPetService, times(0)).findSheltersPetById(0L);
-
-        when(shelterPetService.findSheltersPetById(anyLong())).thenReturn(Optional.empty());
-        mockMvc.perform(get(URLGet + anyLong()))
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(URL2 + "/0")
+                        .content(asJsonString(sheltersPet))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+
+        verify(shelterPetService, times(0)).findSheltersPetById(null);
     }
 
     @Test
     void updateSheltersPetByIdCorrectParametersTest() throws Exception {
-
-//        when(shelterPetService.findSheltersPetById(sheltersPet.getId())).thenReturn(Optional.of(sheltersPet));
-// when(shelterPetService.findSheltersPetById(anyLong())).thenReturn(Optional.of(sheltersPet));
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .put(URLGet + "/1")
-//                        .content(asJsonString(sheltersPet))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
-//                .andExpect(status().isCreated());
-//
-//        verify(shelterPetService, times(1)).saveSheltersPet(sheltersPet);
-
-
-
-//        when(shelterPetService.findSheltersPetById(anyLong())).thenReturn(Optional.of(getType(1L, "test1")));
-//        mockMvc.perform(MockMvcRequestBuilders
-//                        .put(URLGet + "/")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(asJsonString(getType(1L, "test1")))
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isCreated());
-
         when(shelterPetService.findSheltersPetById(sheltersPet.getId())).thenReturn(Optional.of(sheltersPet));
-        sheltersPet.setName("New Name");
+
         mockMvc.perform(MockMvcRequestBuilders
-                        .put(URLGet + "/1")
+                        .put(URL2 + "/1")
                         .content(asJsonString(sheltersPet))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("New Name"))
-                .andExpect(status().isCreated());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
+                .andExpect(status().isCreated())
+                .andDo(MockMvcResultHandlers.print());
 
-        verify(shelterPetService, times(1)).saveSheltersPet(sheltersPet);
-
-
+        verify(shelterPetService, times(1)).updateSheltersPet(sheltersPet);
     }
 
     @Test
     void updateSheltersPetByIdInvalidParametersTest() throws Exception {
-        sheltersPet.setId(0L);
-        when(sheltersPetRepository.existsById(anyLong())).thenReturn(false);
-        ResultActions mvcRes = mockMvc.perform(MockMvcRequestBuilders
-                        .put(URLGet + "/0")
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(URL2 + "/0")
                         .content(asJsonString(sheltersPet))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(404));
 
         verify(shelterPetService, times(0)).saveSheltersPet(sheltersPet);
@@ -290,22 +245,19 @@ class SheltersPetControllerTest {
     @Test
     void deleteSheltersPetByIdCorrectParametersTest() throws Exception {
         when(shelterPetService.findSheltersPetById(anyLong())).thenReturn(Optional.of(sheltersPet));
-        mockMvc.perform(delete(URLGet + "/1"))
+        mockMvc.perform(delete(URL2 + "/1"))
                 .andExpect(status().isNoContent());
 
         verify(shelterPetService, times(1)).deleteSheltersPetById(anyLong());
-
     }
 
-        @Test
-        void deleteSheltersPetByIdInvalidParametersTest() throws Exception {
-            when(sheltersPetRepository.existsById(anyLong())).thenReturn(false);
-            mockMvc.perform(delete(URLGet + "/1"))
-                    .andExpect(status().is(404));
+    @Test
+    void deleteSheltersPetByIdInvalidParametersTest() throws Exception {
+        mockMvc.perform(delete(URL2 + "/0"))
+                .andExpect(status().is(404));
 
-            verify(shelterPetService, times(0)).deleteSheltersPetById(anyLong());
-
-        }
+        verify(shelterPetService, times(0)).deleteSheltersPetById(0L);
+    }
 
     private SheltersPet createSheltersPet (Long id, String name, Long age, String registrationDate, String type, Gender gender) {
         SheltersPet sheltersPet = new SheltersPet();

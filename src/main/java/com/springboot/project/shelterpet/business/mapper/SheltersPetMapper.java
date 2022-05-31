@@ -4,7 +4,6 @@ import com.springboot.project.shelterpet.business.repository.entity.SheltersPetD
 import com.springboot.project.shelterpet.model.SheltersPet;
 import org.mapstruct.Mapper;
 
-
 @Mapper(componentModel = "spring")
 public interface SheltersPetMapper {
 

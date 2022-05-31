@@ -49,7 +49,7 @@ public class SheltersPetServiceImpl implements ShelterPetService {
             throw new HttpClientErrorException(HttpStatus.CONFLICT);
         }
             SheltersPetDAO sheltersPetSaved = sheltersPetRepository.save(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet));
-            log.info("New pet is saved: {}", sheltersPetSaved);
+            log.info("New shelter pet is saved: {}", sheltersPetSaved);
         return sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetSaved);
     }
 
@@ -64,7 +64,7 @@ public class SheltersPetServiceImpl implements ShelterPetService {
     public Optional<SheltersPet> findSheltersPetById(Long id) {
         Optional<SheltersPet> sheltersPetById = sheltersPetRepository.findById(id).
                 flatMap(sheltersPet -> Optional.ofNullable(sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPet)));
-        log.info("Shelters pet with the id {} is {}", id, sheltersPetById);
+        log.info("Shelter pet with the id {} is {}", id, sheltersPetById);
         return sheltersPetById;
     }
 

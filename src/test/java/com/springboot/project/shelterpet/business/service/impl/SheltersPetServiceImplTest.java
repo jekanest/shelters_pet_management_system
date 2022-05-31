@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.web.client.HttpClientErrorException;
@@ -20,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.springboot.project.shelterpet.model.Gender.FEMALE;
 import static com.springboot.project.shelterpet.model.Gender.MALE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,14 +46,17 @@ class SheltersPetServiceImplTest {
     private SheltersPetMapper sheltersPetMapper;
     private SheltersPet sheltersPet;
     private SheltersPetDAO sheltersPetDAO;
-    private List<SheltersPet> sheltersPetList;
     private List<SheltersPetDAO> sheltersPetDAOList;
+
+    @BeforeEach
+    private void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @BeforeEach
     public void beforeEach(){
         sheltersPet = createSheltersPet(1L,"Tom", 35L, "15-08-2021", "cat", MALE);
         sheltersPetDAO = createSheltersPetDAO(1L,"Tom", 35L, "15-08-2021", "cat", MALE);
-        sheltersPetList = createSheltersPetList(sheltersPet);
         sheltersPetDAOList = createSheltersPetDAOList(sheltersPetDAO);
     }
 
@@ -99,7 +102,6 @@ class SheltersPetServiceImplTest {
         verify(sheltersPetRepository, times(0)).save(sheltersPetDAO);
     }
 
-
     @Test
     void findSheltersPetByCorrectIdTest() {
         when(sheltersPetRepository.findById(anyLong())).thenReturn(Optional.of(sheltersPetDAO));
@@ -123,27 +125,26 @@ class SheltersPetServiceImplTest {
 
     @Test
     void updateSheltersPetByCorrectIdTest(){
-//        when(sheltersPetRepository.findById(anyLong())).thenReturn(Optional.of(sheltersPetDAO));
-//        when(sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAO)).thenReturn(sheltersPet);
-//        when(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet)).thenReturn(sheltersPetDAO);
-//        SheltersPet shelterPetUpdated = createSheltersPet(2L,"Vanda", 64L, "12-01-2022", "cat", FEMALE);
-//        sheltersPetService.saveSheltersPet(shelterPetUpdated);
-//        verify(sheltersPetRepository, times(1)).save(sheltersPetDAO);
-//
-//        when(sheltersPetRepository.save(any(SheltersPetDAO.class))).thenReturn(sheltersPetDAO);
-//        when(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet)).thenReturn(sheltersPetDAO);
-//        when(sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAO)).thenReturn(sheltersPet);
-//        SheltersPet sheltersPetSaved = sheltersPetService.saveSheltersPet(sheltersPet);
-//        assertEquals(sheltersPet, sheltersPetSaved);
-//        verify(sheltersPetRepository, times(1)).save(sheltersPetDAO);
+        when(sheltersPetRepository.save(sheltersPetDAO)).thenReturn(sheltersPetDAO);
+        when(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet)).thenReturn(sheltersPetDAO);
+        when(sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAO)).thenReturn(sheltersPet);
+        SheltersPet sheltersPetUpdated= sheltersPetService.updateSheltersPet(sheltersPet);
+        assertEquals(sheltersPet, sheltersPetUpdated);
+        verify(sheltersPetRepository, times(1)).save(sheltersPetDAO);
+    }
 
+    @Test
+    void updateSheltersPetByInvalidIdTest() {
+        when(sheltersPetRepository.save(sheltersPetDAO)).thenThrow(new IllegalArgumentException());
+        when(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet)).thenReturn(sheltersPetDAO);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sheltersPetService.updateSheltersPet(sheltersPet));
+        verify(sheltersPetRepository, times(1)).save(sheltersPetDAO);
     }
 
     @Test
     void deleteSheltersPetByCorrectIdTest() {
         sheltersPetService.deleteSheltersPetById(anyLong());
         verify(sheltersPetRepository, times(1)).deleteById(anyLong());
-
     }
 
     @Test
@@ -151,11 +152,6 @@ class SheltersPetServiceImplTest {
         doThrow(new IllegalArgumentException()).when(sheltersPetRepository).deleteById(anyLong());
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> sheltersPetService.deleteSheltersPetById(anyLong()));
-
-
-//        when(sheltersPetRepository.findById(anyLong())).thenThrow(IllegalArgumentException.class);
-//        verify(sheltersPetRepository, times(0)).deleteById(anyLong());
-
     }
 
     private SheltersPet createSheltersPet(Long id, String name, Long age, String registrationDate, String type, Gender gender) {
@@ -168,6 +164,7 @@ class SheltersPetServiceImplTest {
         sheltersPet.setGender(gender);
         return sheltersPet;
     }
+
     private SheltersPetDAO createSheltersPetDAO(Long id, String name, Long age, String registrationDate, String type, Gender gender) {
         SheltersPetDAO sheltersPetDAO = new SheltersPetDAO();
         sheltersPetDAO.setId(id);
@@ -179,13 +176,6 @@ class SheltersPetServiceImplTest {
         return sheltersPetDAO;
     }
 
-    private List<SheltersPet> createSheltersPetList(SheltersPet sheltersPet) {
-        List<SheltersPet> sheltersPetList = new ArrayList<>();
-        sheltersPetList.add(sheltersPet);
-        sheltersPetList.add(sheltersPet);
-        sheltersPetList.add(sheltersPet);
-        return sheltersPetList;
-    }
     private List<SheltersPetDAO> createSheltersPetDAOList(SheltersPetDAO sheltersPetDAO) {
         List<SheltersPetDAO> sheltersPetDAOList = new ArrayList<>();
         sheltersPetDAOList.add(sheltersPetDAO);
