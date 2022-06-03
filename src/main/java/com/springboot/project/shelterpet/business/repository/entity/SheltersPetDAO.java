@@ -41,8 +41,4 @@ public class SheltersPetDAO {
     @Column(name="pet_gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    public SheltersPetDAO(Long id) {
-        this.id = id;
-    }
 }
