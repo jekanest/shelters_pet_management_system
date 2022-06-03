@@ -7,6 +7,7 @@ import com.springboot.project.shelterpet.model.Gender;
 import com.springboot.project.shelterpet.model.SheltersPet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -43,6 +44,9 @@ class SheltersPetControllerTest {
     @Autowired
     private SheltersPetController sheltersPetController;
 
+    @Autowired
+    private KieSession kieSession;
+
     @MockBean
     private ShelterPetService shelterPetService;
 
@@ -51,7 +55,7 @@ class SheltersPetControllerTest {
 
     @BeforeEach
     public void beforeEach(){
-        sheltersPet = createSheltersPet(1L,"Tom", 35L, "15-08-2021", "cat", MALE);
+        sheltersPet = createSheltersPet(1L,"Tom", 35L, "15-08-2021", "cat", MALE, "productive years", "Should be adopted");
         sheltersPetList = createSheltersPetList(sheltersPet);
     }
 
@@ -69,6 +73,8 @@ class SheltersPetControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].registrationDate").value("15-08-2021"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("cat"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value("MALE"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].agePhase").value("productive years"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value("Should be adopted"))
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
@@ -88,6 +94,8 @@ class SheltersPetControllerTest {
 
     @Test
     void postSheltersPetCorrectParametersTest() throws Exception{
+        kieSession.insert(sheltersPet);
+        kieSession.fireAllRules();
         mockMvc.perform(MockMvcRequestBuilders
                         .post(URL2)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -259,7 +267,7 @@ class SheltersPetControllerTest {
         verify(shelterPetService, times(0)).deleteSheltersPetById(0L);
     }
 
-    private SheltersPet createSheltersPet (Long id, String name, Long age, String registrationDate, String type, Gender gender) {
+    private SheltersPet createSheltersPet (Long id, String name, Long age, String registrationDate, String type, Gender gender, String agePhase, String description) {
         SheltersPet sheltersPet = new SheltersPet();
         sheltersPet.setId(id);
         sheltersPet.setName(name);
@@ -267,6 +275,8 @@ class SheltersPetControllerTest {
         sheltersPet.setRegistrationDate(registrationDate);
         sheltersPet.setType(type);
         sheltersPet.setGender(gender);
+        sheltersPet.setAgePhase(agePhase);
+        sheltersPet.setDescription(description);
         return sheltersPet;
     }
 

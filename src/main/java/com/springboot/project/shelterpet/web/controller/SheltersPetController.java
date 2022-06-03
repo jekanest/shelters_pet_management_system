@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.log4j.Log4j2;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,9 @@ public class SheltersPetController {
 
     @Autowired
     ShelterPetService shelterPetService;
+
+    @Autowired
+    private KieSession kieSession;
 
     @GetMapping("/pets")
     @ApiOperation(value = "Gets all shelter pets",
@@ -75,8 +79,12 @@ public class SheltersPetController {
         return ResponseEntity.badRequest().build();
     }
         SheltersPet sheltersPetSaved= shelterPetService.saveSheltersPet(sheltersPet);
-        log.info("New shelter pet is created: {}", sheltersPetSaved);
-        return new ResponseEntity<>(sheltersPetSaved, HttpStatus.CREATED);
+        kieSession.insert(sheltersPetSaved);
+        kieSession.fireAllRules();
+        SheltersPet sheltersPetUpdated= shelterPetService.updateSheltersPet(sheltersPetSaved);
+
+        log.info("New shelter pet is created: {}", sheltersPetUpdated);
+        return new ResponseEntity<>(sheltersPetUpdated, HttpStatus.CREATED);
 }
 
     @GetMapping("/pet/{id}")

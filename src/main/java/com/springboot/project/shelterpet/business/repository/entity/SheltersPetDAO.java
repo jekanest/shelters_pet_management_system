@@ -29,6 +29,9 @@ public class SheltersPetDAO {
     @Column(name="pet_name")
     private String name;
 
+    @Column(name="pet_date_of_birth")
+    private String petDateOfBirth;
+
     @Column(name="pet_age_in_months")
     private Long age;
 
@@ -42,7 +45,10 @@ public class SheltersPetDAO {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    public SheltersPetDAO(Long id) {
-        this.id = id;
-    }
+    @Column(name="pet_age_phase")
+    private String agePhase;
+
+    @Column(name ="description")
+    private String description;
+
 }
