@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,8 +56,8 @@ class SheltersPetServiceImplTest {
 
     @BeforeEach
     public void beforeEach(){
-        sheltersPet = createSheltersPet(1L,"Tom", 35L, "15-08-2021", "cat", MALE);
-        sheltersPetDAO = createSheltersPetDAO(1L,"Tom", 35L, "15-08-2021", "cat", MALE);
+        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE);
+        sheltersPetDAO = createSheltersPetDAO(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE);
         sheltersPetDAOList = createSheltersPetDAOList(sheltersPetDAO);
     }
 
@@ -96,7 +97,7 @@ class SheltersPetServiceImplTest {
 
     @Test
     void saveSheltersPetParametersConflictTest() {
-        SheltersPet sheltersPetSaved = createSheltersPet(1L,"Tom", 35L, "15-08-2021", "cat", MALE);
+        SheltersPet sheltersPetSaved = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE);
         when(sheltersPetRepository.findAll()).thenReturn(sheltersPetDAOList);
         assertThrows(HttpClientErrorException.class, () -> sheltersPetService.saveSheltersPet(sheltersPetSaved));
         verify(sheltersPetRepository, times(0)).save(sheltersPetDAO);
@@ -109,7 +110,7 @@ class SheltersPetServiceImplTest {
         Optional<SheltersPet> sheltersPetFound = sheltersPetService.findSheltersPetById(sheltersPet.getId());
         assertEquals(sheltersPet.getId(), sheltersPetFound.get().getId());
         assertEquals(sheltersPet.getName(), sheltersPetFound.get().getName());
-        assertEquals(sheltersPet.getAge(), sheltersPetFound.get().getAge());
+        assertEquals(sheltersPet.getPetDateOfBirth(), sheltersPetFound.get().getPetDateOfBirth());
         assertEquals(sheltersPet.getRegistrationDate(), sheltersPetFound.get().getRegistrationDate());
         assertEquals(sheltersPet.getType(), sheltersPetFound.get().getType());
         assertEquals(sheltersPet.getGender(), sheltersPetFound.get().getGender());
@@ -154,21 +155,24 @@ class SheltersPetServiceImplTest {
                 () -> sheltersPetService.deleteSheltersPetById(anyLong()));
     }
 
-    private SheltersPet createSheltersPet(Long id, String name, Long age, String registrationDate, String type, Gender gender) {
+    private SheltersPet createSheltersPet(Long id, String name, String petDateOfBirth, Long Age, String registrationDate, String type, Gender gender) {
         SheltersPet sheltersPet = new SheltersPet();
         sheltersPet.setId(id);
         sheltersPet.setName(name);
-        sheltersPet.setAge(age);
+        sheltersPet.setPetDateOfBirth(petDateOfBirth);
+        sheltersPet.setAge(Long.valueOf(sheltersPet.calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
+                LocalDate.now())));
         sheltersPet.setRegistrationDate(registrationDate);
         sheltersPet.setType(type);
         sheltersPet.setGender(gender);
         return sheltersPet;
     }
 
-    private SheltersPetDAO createSheltersPetDAO(Long id, String name, Long age, String registrationDate, String type, Gender gender) {
+    private SheltersPetDAO createSheltersPetDAO(Long id, String name, String petDateOfBirth, Long age, String registrationDate, String type, Gender gender) {
         SheltersPetDAO sheltersPetDAO = new SheltersPetDAO();
         sheltersPetDAO.setId(id);
         sheltersPetDAO.setName(name);
+        sheltersPetDAO.setPetDateOfBirth(petDateOfBirth);
         sheltersPetDAO.setAge(age);
         sheltersPetDAO.setRegistrationDate(registrationDate);
         sheltersPetDAO.setType(type);

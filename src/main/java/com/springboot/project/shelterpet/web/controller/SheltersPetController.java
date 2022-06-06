@@ -29,7 +29,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-@Api(tags = DescriptionVariables.SHELTERSPET)
+@Api(tags = {DescriptionVariables.SHELTERSPET})
 @Log4j2
 @RestController
 @RequestMapping("/api/v2")

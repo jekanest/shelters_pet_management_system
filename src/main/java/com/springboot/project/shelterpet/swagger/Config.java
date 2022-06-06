@@ -22,7 +22,7 @@ public class Config {
                 .build()
                 .apiInfo(apiInfo());
         docket.useDefaultResponseMessages(false);
-        return docket;
+        return appendTags(docket);
     }
 
     private Docket appendTags(Docket docket) {

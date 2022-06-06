@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,6 +51,8 @@ public class SheltersPetServiceImpl implements ShelterPetService {
             log.error("Shelter pet data conflict exception is thrown: {}", HttpStatus.CONFLICT);
             throw new HttpClientErrorException(HttpStatus.CONFLICT);
         }
+            sheltersPet.setAge(Long.valueOf(sheltersPet.calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
+                LocalDate.now())));
             SheltersPetDAO sheltersPetSaved = sheltersPetRepository.save(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet));
             log.info("New shelter pet is saved: {}", sheltersPetSaved);
         return sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetSaved);
@@ -57,6 +60,8 @@ public class SheltersPetServiceImpl implements ShelterPetService {
 
     @Override
     public SheltersPet updateSheltersPet(SheltersPet sheltersPet){
+        sheltersPet.setAge(Long.valueOf(sheltersPet.calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
+                LocalDate.now())));
         SheltersPetDAO sheltersPetDAOSaved = sheltersPetRepository.save(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet));
         log.info("Shelter pet data is updated: {}", () -> sheltersPetDAOSaved);
         return sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAOSaved);

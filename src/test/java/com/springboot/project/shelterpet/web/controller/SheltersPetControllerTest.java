@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +52,7 @@ class SheltersPetControllerTest {
 
     @BeforeEach
     public void beforeEach(){
-        sheltersPet = createSheltersPet(1L,"Tom", 35L, "15-08-2021", "cat", MALE);
+        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE);
         sheltersPetList = createSheltersPetList(sheltersPet);
     }
 
@@ -65,8 +66,9 @@ class SheltersPetControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(3)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Tom"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(35L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].registrationDate").value("15-08-2021"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].petDateOfBirth").value("2022-02-01"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(4L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].registrationDate").value("2022-06-02"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("cat"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value("MALE"))
                 .andExpect(status().isOk())
@@ -136,8 +138,8 @@ class SheltersPetControllerTest {
     }
 
     @Test
-    void postSheltersInvalidAgeTest() throws Exception{
-        sheltersPet.setAge(-1L);
+    void postSheltersEmptyDateOfBirthTest() throws Exception{
+        sheltersPet.setPetDateOfBirth("");
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post(URL2)
@@ -192,8 +194,9 @@ class SheltersPetControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Tom"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(35L))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.registrationDate").value("15-08-2021"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.petDateOfBirth").value("2022-02-01"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(4L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.registrationDate").value("2022-06-02"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type").value("cat"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("MALE"))
                 .andExpect(status().isOk()).
@@ -259,11 +262,13 @@ class SheltersPetControllerTest {
         verify(shelterPetService, times(0)).deleteSheltersPetById(0L);
     }
 
-    private SheltersPet createSheltersPet (Long id, String name, Long age, String registrationDate, String type, Gender gender) {
+    private SheltersPet createSheltersPet(Long id, String name, String petDateOfBirth, Long age, String registrationDate, String type, Gender gender) {
         SheltersPet sheltersPet = new SheltersPet();
         sheltersPet.setId(id);
         sheltersPet.setName(name);
-        sheltersPet.setAge(age);
+        sheltersPet.setPetDateOfBirth(petDateOfBirth);
+        sheltersPet.setAge(Long.valueOf(sheltersPet.calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
+                LocalDate.now())));
         sheltersPet.setRegistrationDate(registrationDate);
         sheltersPet.setType(type);
         sheltersPet.setGender(gender);

@@ -16,7 +16,6 @@ import javax.persistence.Table;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name="shelters_pets")
 public class SheltersPetDAO {
@@ -28,6 +27,9 @@ public class SheltersPetDAO {
 
     @Column(name="pet_name")
     private String name;
+
+    @Column(name="pet_date_of_birth")
+    private String petDateOfBirth;
 
     @Column(name="pet_age_in_months")
     private Long age;
