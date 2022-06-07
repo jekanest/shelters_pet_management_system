@@ -1,0 +1,84 @@
+package KieRule;
+import com.springboot.project.shelterpet.model.SheltersPet;
+
+rule "CatKitten"
+
+when
+sheltersPetObject : SheltersPet(type == "cat" && age <= 3);
+then
+sheltersPetObject.setAgePhase("kitten");
+sheltersPetObject.setDescription("Follow the list of required vaccination");
+end;
+
+rule "CatAdolescent"
+
+when
+sheltersPetObject : SheltersPet(type == "cat" && age > 3 && age < 24);
+then
+sheltersPetObject.setAgePhase("adolescent");
+sheltersPetObject.setDescription("Schedule one visit to the vet per year");
+end;
+
+rule "CatProductiveYears"
+
+when
+sheltersPetObject : SheltersPet(type == "cat" && age >= 24 && age < 96);
+then
+sheltersPetObject.setAgePhase("productive years");
+sheltersPetObject.setDescription("Schedule one visit to the vet per year");
+end;
+
+rule "CatMiddleAge"
+
+when
+sheltersPetObject : SheltersPet(type == "cat" && age >= 96 && age < 144);
+then
+sheltersPetObject.setAgePhase("middle age");
+sheltersPetObject.setDescription("Should be changed food and vitamins added");
+end;
+
+rule "CatSenior"
+
+when
+sheltersPetObject : SheltersPet(type == "cat" && age > 144);
+then
+sheltersPetObject.setAgePhase("senior");
+sheltersPetObject.setDescription("Should be changed food and vitamins added");
+end;
+
+
+rule "DogPup"
+
+when
+sheltersPetObject : SheltersPet(type == "dog" && age < 12);
+then
+sheltersPetObject.setAgePhase("pup");
+sheltersPetObject.setDescription("Follow the list of required vaccination");
+end;
+
+rule "DogProductiveYears"
+
+when
+sheltersPetObject : SheltersPet(type == "dog" && age >= 12 && age < 132);
+then
+sheltersPetObject.setAgePhase("productive years");
+sheltersPetObject.setDescription("Schedule one visit to the vet per year");
+end;
+
+rule "DogMiddleAge"
+
+when
+sheltersPetObject : SheltersPet(type == "dog" && age >= 132 && age < 204);
+then
+sheltersPetObject.setAgePhase("middle age");
+sheltersPetObject.setDescription("Should be changed food and vitamins added");
+end;
+
+rule "DogSenior"
+
+when
+sheltersPetObject : SheltersPet(type == "dog" && age >= 204);
+then
+sheltersPetObject.setAgePhase("senior");
+sheltersPetObject.setDescription("Should be changed food and vitamins added");
+end;

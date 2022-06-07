@@ -8,5 +8,6 @@ class ShelterPetApplicationTests {
 
 	@Test
 	void contextLoads() {
+		SheltersPetApplication.main(new String[] {});
 	}
 }

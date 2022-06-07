@@ -1,7 +1,6 @@
 package com.springboot.project.shelterpet.business.repository.entity;
 
 import com.springboot.project.shelterpet.model.Gender;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -43,4 +42,10 @@ public class SheltersPetDAO {
     @Column(name="pet_gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @Column(name="pet_age_phase")
+    private String agePhase;
+
+    @Column(name ="description")
+    private String description;
 }

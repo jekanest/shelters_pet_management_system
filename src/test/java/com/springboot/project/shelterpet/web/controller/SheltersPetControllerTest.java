@@ -1,12 +1,12 @@
 package com.springboot.project.shelterpet.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.project.shelterpet.business.repository.SheltersPetRepository;
 import com.springboot.project.shelterpet.business.service.ShelterPetService;
 import com.springboot.project.shelterpet.model.Gender;
 import com.springboot.project.shelterpet.model.SheltersPet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +40,9 @@ class SheltersPetControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    KieSession kieSession;
+
     @Autowired
     private SheltersPetController sheltersPetController;
 
@@ -52,7 +54,7 @@ class SheltersPetControllerTest {
 
     @BeforeEach
     public void beforeEach(){
-        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE);
+        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
         sheltersPetList = createSheltersPetList(sheltersPet);
     }
 
@@ -71,6 +73,8 @@ class SheltersPetControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].registrationDate").value("2022-06-02"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("cat"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value("MALE"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].agePhase").value("adolescent"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value("Schedule one visit to the vet per year"))
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
@@ -199,6 +203,8 @@ class SheltersPetControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.registrationDate").value("2022-06-02"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type").value("cat"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("MALE"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.agePhase").value("adolescent"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Schedule one visit to the vet per year"))
                 .andExpect(status().isOk()).
                 andDo(MockMvcResultHandlers.print());
 
@@ -262,16 +268,17 @@ class SheltersPetControllerTest {
         verify(shelterPetService, times(0)).deleteSheltersPetById(0L);
     }
 
-    private SheltersPet createSheltersPet(Long id, String name, String petDateOfBirth, Long age, String registrationDate, String type, Gender gender) {
+    private SheltersPet createSheltersPet(Long id, String name, String petDateOfBirth, Long age, String registrationDate, String type, Gender gender, String agePhase, String description) {
         SheltersPet sheltersPet = new SheltersPet();
         sheltersPet.setId(id);
         sheltersPet.setName(name);
         sheltersPet.setPetDateOfBirth(petDateOfBirth);
-        sheltersPet.setAge(Long.valueOf(sheltersPet.calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
-                LocalDate.now())));
+        sheltersPet.setAge(age);
         sheltersPet.setRegistrationDate(registrationDate);
         sheltersPet.setType(type);
         sheltersPet.setGender(gender);
+        sheltersPet.setAgePhase(agePhase);
+        sheltersPet.setDescription(description);
         return sheltersPet;
     }
 

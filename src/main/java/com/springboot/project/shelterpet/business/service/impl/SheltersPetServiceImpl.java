@@ -5,8 +5,8 @@ import com.springboot.project.shelterpet.business.repository.SheltersPetReposito
 import com.springboot.project.shelterpet.business.repository.entity.SheltersPetDAO;
 import com.springboot.project.shelterpet.model.SheltersPet;
 import com.springboot.project.shelterpet.business.service.ShelterPetService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -15,53 +15,55 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class SheltersPetServiceImpl implements ShelterPetService {
 
-    @Autowired
-    SheltersPetRepository sheltersPetRepository;
+    private final SheltersPetRepository sheltersPetRepository;
 
-    @Autowired
-    SheltersPetMapper sheltersPetMapper;
+    private final SheltersPetMapper sheltersPetMapper;
 
     @Cacheable(value = "sheltersPetList")
     @Scheduled(fixedDelay = 300000)
     @Override
     public List<SheltersPet> findAllSheltersPet() {
         List<SheltersPetDAO> shelterPetsList = sheltersPetRepository.findAll();
-        log.info("Shelters pets list is received (size  is : {}",shelterPetsList::size);
+        log.info("Shelters pets list is received> Size  is : {}",shelterPetsList::size);
         return shelterPetsList.stream().map(sheltersPetMapper::sheltersPetDAOToSheltersPet).collect(Collectors.toList());
     }
 
     @CacheEvict(cacheNames = "sheltersPetList", allEntries = true)
     @Override
     public SheltersPet saveSheltersPet(SheltersPet sheltersPet) {
-
-        if (sheltersPetRepository.findAll().stream().anyMatch(p -> p.getName().equals(sheltersPet.getName())
-                && p.getAge().equals(sheltersPet.getAge())
+        if (sheltersPetRepository.findAll().stream().
+                anyMatch(p -> p.getType().equals(sheltersPet.getType())
+                && p.getPetDateOfBirth().equals(sheltersPet.getPetDateOfBirth())
                 && p.getRegistrationDate().equals(sheltersPet.getRegistrationDate())
-                && p.getType().equals(sheltersPet.getType())
+                && p.getName().equals(sheltersPet.getName())
                 && p.getGender().equals(sheltersPet.getGender())
         )) {
             log.error("Shelter pet data conflict exception is thrown: {}", HttpStatus.CONFLICT);
             throw new HttpClientErrorException(HttpStatus.CONFLICT);
         }
-            sheltersPet.setAge(Long.valueOf(sheltersPet.calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
-                LocalDate.now())));
+            sheltersPet.setAge((long) calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
+                    LocalDate.now()));
             SheltersPetDAO sheltersPetSaved = sheltersPetRepository.save(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet));
+
             log.info("New shelter pet is saved: {}", sheltersPetSaved);
         return sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetSaved);
     }
 
+    @CacheEvict(cacheNames = "sheltersPetList", allEntries = true)
     @Override
     public SheltersPet updateSheltersPet(SheltersPet sheltersPet){
-        sheltersPet.setAge(Long.valueOf(sheltersPet.calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
-                LocalDate.now())));
+        sheltersPet.setAge((long) calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
+                LocalDate.now()));
         SheltersPetDAO sheltersPetDAOSaved = sheltersPetRepository.save(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet));
         log.info("Shelter pet data is updated: {}", () -> sheltersPetDAOSaved);
         return sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAOSaved);
@@ -75,9 +77,16 @@ public class SheltersPetServiceImpl implements ShelterPetService {
         return sheltersPetById;
     }
 
+    @CacheEvict(cacheNames = "sheltersPetList", allEntries = true)
     @Override
     public void deleteSheltersPetById(Long id) {
         sheltersPetRepository.deleteById(id);
         log.info("Shelter pet with the id {} is deleted", id);
     }
+
+    private int calculateAgeOfTheShelterPet(LocalDate dateOfBirth, LocalDate currentDate) {
+        Period calculateAgeOfTheShelterPet = Period.between(dateOfBirth, currentDate);
+        return calculateAgeOfTheShelterPet.getMonths();
+    }
+
 }

@@ -9,8 +9,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.kie.api.runtime.KieSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -31,12 +32,14 @@ import java.util.Optional;
 
 @Api(tags = {DescriptionVariables.SHELTERSPET})
 @Log4j2
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v2")
 public class SheltersPetController {
 
-    @Autowired
-    ShelterPetService shelterPetService;
+    private final ShelterPetService shelterPetService;
+
+    private final KieSession kieSession;
 
     @GetMapping("/pets")
     @ApiOperation(value = "Gets all shelter pets",
@@ -75,6 +78,9 @@ public class SheltersPetController {
         return ResponseEntity.badRequest().build();
     }
         SheltersPet sheltersPetSaved= shelterPetService.saveSheltersPet(sheltersPet);
+        kieSession.insert(sheltersPetSaved);
+        kieSession.fireAllRules();
+        SheltersPet sheltersPetUpdated= shelterPetService.updateSheltersPet(sheltersPetSaved);
         log.info("New shelter pet is created: {}", sheltersPetSaved);
         return new ResponseEntity<>(sheltersPetSaved, HttpStatus.CREATED);
 }
@@ -144,6 +150,8 @@ public class SheltersPetController {
             return ResponseEntity.notFound().build();
         }
         shelterPetService.updateSheltersPet(sheltersPetUpdated);
+        kieSession.insert(sheltersPetUpdated);
+        kieSession.fireAllRules();
         log.info("Shelter pet with id {} is updated: {}", id, sheltersPetUpdated);
         return new ResponseEntity<>(sheltersPetUpdated, HttpStatus.CREATED);
     }

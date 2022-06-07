@@ -1,6 +1,8 @@
 package com.springboot.project.shelterpet.business.service;
 
 import com.springboot.project.shelterpet.model.SheltersPet;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,10 +17,5 @@ public interface ShelterPetService {
     Optional<SheltersPet> findSheltersPetById(Long id);
 
     void deleteSheltersPetById(Long id);
-
-
-
-
-
 
 }
