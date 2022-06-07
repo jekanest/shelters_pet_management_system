@@ -72,7 +72,7 @@ public class SheltersPetController {
             @ApiResponse(code = 500, message = HTMLResponseMessages.HTTP_500)
     })
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<SheltersPet> postSheltersPet(@Valid @RequestBody SheltersPet sheltersPet, BindingResult bindingResult){
+    public ResponseEntity<SheltersPet> postSheltersPet(@Valid @RequestBody SheltersPet sheltersPet, BindingResult bindingResult) throws Exception {
         if (bindingResult.hasErrors()) {
         log.error("New shelter pet data has an error: {}", bindingResult);
         return ResponseEntity.badRequest().build();
@@ -142,7 +142,7 @@ public class SheltersPetController {
     public ResponseEntity<SheltersPet> putSheltersPetById(@ApiParam(value = "id of the shelter pet", required = true)
                                                           @NonNull  @PathVariable Long id,
                                                           @Valid @RequestBody SheltersPet sheltersPetUpdated,
-                                                          BindingResult bindingResult){
+                                                          BindingResult bindingResult) throws Exception {
         log.info("Update existing shelter pet with id: {} and new body: {}", id, sheltersPetUpdated);
         Optional<SheltersPet> sheltersPet = shelterPetService.findSheltersPetById(sheltersPetUpdated.getId());
         if (bindingResult.hasErrors() || !id.equals(sheltersPetUpdated.getId())) {

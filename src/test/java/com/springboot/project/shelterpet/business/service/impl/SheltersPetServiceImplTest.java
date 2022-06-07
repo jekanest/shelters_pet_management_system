@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import static com.springboot.project.shelterpet.model.Gender.MALE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -80,7 +82,7 @@ class SheltersPetServiceImplTest {
     }
 
     @Test
-    void saveSheltersPetCorrectParametersTest() {
+    void saveSheltersPetCorrectParametersTest() throws Exception {
         when(sheltersPetRepository.save(any(SheltersPetDAO.class))).thenReturn(sheltersPetDAO);
         when(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet)).thenReturn(sheltersPetDAO);
         when(sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAO)).thenReturn(sheltersPet);
@@ -106,6 +108,14 @@ class SheltersPetServiceImplTest {
     }
 
     @Test
+    void saveSheltersPetInvalidDateOfBirthTest() {
+        SheltersPet sheltersPetSaved = createSheltersPet(1L,"Tom", "2028-02-01",4L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
+        when(sheltersPetRepository.findAll()).thenReturn(sheltersPetDAOList);
+        assertThrows(Exception.class, () -> sheltersPetService.saveSheltersPet(sheltersPetSaved));
+        verify(sheltersPetRepository, times(0)).save(sheltersPetDAO);
+    }
+
+    @Test
     void findSheltersPetByCorrectIdTest() {
         when(sheltersPetRepository.findById(anyLong())).thenReturn(Optional.of(sheltersPetDAO));
         when(sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAO)).thenReturn(sheltersPet);
@@ -127,7 +137,7 @@ class SheltersPetServiceImplTest {
     }
 
     @Test
-    void updateSheltersPetByCorrectIdTest(){
+    void updateSheltersPetByCorrectIdTest() throws Exception {
         when(sheltersPetRepository.save(sheltersPetDAO)).thenReturn(sheltersPetDAO);
         when(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet)).thenReturn(sheltersPetDAO);
         when(sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAO)).thenReturn(sheltersPet);

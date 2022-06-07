@@ -40,17 +40,12 @@ public class SheltersPetServiceImpl implements ShelterPetService {
 
     @CacheEvict(cacheNames = "sheltersPetList", allEntries = true)
     @Override
-    public SheltersPet saveSheltersPet(SheltersPet sheltersPet) {
-        if (sheltersPetRepository.findAll().stream().
-                anyMatch(p -> p.getType().equals(sheltersPet.getType())
-                && p.getPetDateOfBirth().equals(sheltersPet.getPetDateOfBirth())
-                && p.getRegistrationDate().equals(sheltersPet.getRegistrationDate())
-                && p.getName().equals(sheltersPet.getName())
-                && p.getGender().equals(sheltersPet.getGender())
-        )) {
+    public SheltersPet saveSheltersPet(SheltersPet sheltersPet) throws Exception {
+        if (anyMatch(sheltersPet)) {
             log.error("Shelter pet data conflict exception is thrown: {}", HttpStatus.CONFLICT);
             throw new HttpClientErrorException(HttpStatus.CONFLICT);
         }
+            checkDateOfBirth(LocalDate.parse(sheltersPet.getPetDateOfBirth()), LocalDate.now());
             sheltersPet.setAge((long) calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
                     LocalDate.now()));
             SheltersPetDAO sheltersPetSaved = sheltersPetRepository.save(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet));
@@ -61,7 +56,8 @@ public class SheltersPetServiceImpl implements ShelterPetService {
 
     @CacheEvict(cacheNames = "sheltersPetList", allEntries = true)
     @Override
-    public SheltersPet updateSheltersPet(SheltersPet sheltersPet){
+    public SheltersPet updateSheltersPet(SheltersPet sheltersPet) throws Exception {
+        checkDateOfBirth(LocalDate.parse(sheltersPet.getPetDateOfBirth()), LocalDate.now());
         sheltersPet.setAge((long) calculateAgeOfTheShelterPet(LocalDate.parse(sheltersPet.getPetDateOfBirth()),
                 LocalDate.now()));
         SheltersPetDAO sheltersPetDAOSaved = sheltersPetRepository.save(sheltersPetMapper.sheltersPetToSheltersPetDAO(sheltersPet));
@@ -84,9 +80,24 @@ public class SheltersPetServiceImpl implements ShelterPetService {
         log.info("Shelter pet with the id {} is deleted", id);
     }
 
-    private int calculateAgeOfTheShelterPet(LocalDate dateOfBirth, LocalDate currentDate) {
+    public static void checkDateOfBirth(LocalDate dateOfBirth, LocalDate currentDate) throws Exception{
+        if(currentDate.isBefore(dateOfBirth)){
+            throw new Exception("Please check date of birth, it should be before current date");
+        }
+    }
+
+    public int calculateAgeOfTheShelterPet(LocalDate dateOfBirth, LocalDate currentDate) {
         Period calculateAgeOfTheShelterPet = Period.between(dateOfBirth, currentDate);
         return calculateAgeOfTheShelterPet.getMonths();
     }
 
+    public boolean anyMatch (SheltersPet sheltersPet) {
+        return (sheltersPetRepository.findAll().stream().
+                anyMatch(p -> p.getType().equals(sheltersPet.getType())
+                        && p.getPetDateOfBirth().equals(sheltersPet.getPetDateOfBirth())
+                        && p.getRegistrationDate().equals(sheltersPet.getRegistrationDate())
+                        && p.getName().equals(sheltersPet.getName())
+                        && p.getGender().equals(sheltersPet.getGender())
+                ));
+    }
 }

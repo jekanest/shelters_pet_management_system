@@ -10,9 +10,9 @@ public interface ShelterPetService {
 
     List<SheltersPet> findAllSheltersPet ();
 
-    SheltersPet saveSheltersPet (SheltersPet sheltersPet);
+    SheltersPet saveSheltersPet (SheltersPet sheltersPet) throws Exception;
 
-    SheltersPet updateSheltersPet (SheltersPet sheltersPet);
+    SheltersPet updateSheltersPet (SheltersPet sheltersPet) throws Exception;
 
     Optional<SheltersPet> findSheltersPetById(Long id);
 
