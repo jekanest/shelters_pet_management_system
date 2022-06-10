@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class SheltersPetServiceImpl implements ShelterPetService {
     @Override
     public List<SheltersPet> findAllSheltersPet() {
         List<SheltersPetDAO> shelterPetsList = sheltersPetRepository.findAll();
-        log.info("Shelters pets list is received> Size  is : {}",shelterPetsList::size);
+        log.info("Shelters pets list is received. Size  is : {}",shelterPetsList::size);
         return shelterPetsList.stream().map(sheltersPetMapper::sheltersPetDAOToSheltersPet).collect(Collectors.toList());
     }
 
@@ -78,6 +79,15 @@ public class SheltersPetServiceImpl implements ShelterPetService {
     public void deleteSheltersPetById(Long id) {
         sheltersPetRepository.deleteById(id);
         log.info("Shelter pet with the id {} is deleted", id);
+    }
+
+    @Override
+    public List<SheltersPet> findSheltersPetByType(String type) {
+        List<SheltersPetDAO> sheltersPetByTypeList= sheltersPetRepository.findAll();
+        log.info("Shelter pet by type {} is {}", type, sheltersPetByTypeList);
+            return sheltersPetByTypeList.stream().filter(byType ->
+                    byType.getType().equalsIgnoreCase(type)).map(sheltersPetMapper::sheltersPetDAOToSheltersPet)
+                    .collect(Collectors.toList());
     }
 
     public static void checkDateOfBirth(LocalDate dateOfBirth, LocalDate currentDate) throws Exception{

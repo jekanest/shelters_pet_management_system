@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.springboot.project.shelterpet.model.Gender.MALE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -134,6 +135,22 @@ class SheltersPetServiceImplTest {
         when(sheltersPetRepository.findById(anyLong())).thenReturn(Optional.empty());
         Assertions.assertFalse(sheltersPetService.findSheltersPetById(anyLong()).isPresent());
         verify(sheltersPetRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void findSheltersPetByCorrectTypeTest(){
+        when(sheltersPetRepository.findAll()).thenReturn(sheltersPetDAOList);
+        when(sheltersPetMapper.sheltersPetDAOToSheltersPet(sheltersPetDAO)).thenReturn(sheltersPet);
+        List<SheltersPet> sheltersPetListByType = sheltersPetService.findSheltersPetByType("cat");
+        assertEquals(3,sheltersPetListByType.size());
+        verify(sheltersPetRepository, times(1)).findAll();
+   }
+
+    @Test
+    void findSheltersPetByIncorrectTypeTest(){
+        when(sheltersPetRepository.findAll()).thenReturn(Collections.emptyList());
+        assertTrue(sheltersPetService.findSheltersPetByType(sheltersPet.getType()).isEmpty());
+        verify(sheltersPetRepository, times(1)).findAll();
     }
 
     @Test

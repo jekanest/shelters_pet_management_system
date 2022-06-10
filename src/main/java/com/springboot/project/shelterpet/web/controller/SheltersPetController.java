@@ -106,6 +106,27 @@ public class SheltersPetController {
         return sheltersPet.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/pet/list/{type}")
+    @ApiOperation(value = "Find shelters pet by type",
+            notes = "Provide a type to search specific pet in the database",
+            response = SheltersPet.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = HTMLResponseMessages.HTTP_200),
+            @ApiResponse(code = 404, message = HTMLResponseMessages.HTTP_404),
+            @ApiResponse(code = 500, message = HTMLResponseMessages.HTTP_500),
+    })
+    public ResponseEntity<List<SheltersPet>> getSheltersPetByType(@ApiParam(value = "type of the pet", required = true)
+                                                           @NonNull @PathVariable("type") String type){
+        log.info("Find shelter pet by passing type, where pets type is : {}", type);
+        List<SheltersPet> sheltersPets = shelterPetService.findSheltersPetByType(type);
+        if (sheltersPets.isEmpty()) {
+            log.warn("Shelter pet list is empty! {}", sheltersPets);
+            return ResponseEntity.notFound().build();
+        }
+        log.info("Shelter pet list is found. Size: {}", sheltersPets::size);
+        return ResponseEntity.ok(sheltersPets);
+    }
+
     @DeleteMapping("/pet/{id}")
     @ApiOperation(value = "Delete shelter pet by provided id",
             notes = "Deletes the shelter pet if provided id exists",

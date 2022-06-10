@@ -18,4 +18,5 @@ public interface ShelterPetService {
 
     void deleteSheltersPetById(Long id);
 
+    List<SheltersPet> findSheltersPetByType(String type);
 }

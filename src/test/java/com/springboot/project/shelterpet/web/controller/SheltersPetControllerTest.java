@@ -224,6 +224,41 @@ class SheltersPetControllerTest {
     }
 
     @Test
+    void getSheltersPetByCorrectTypeTest() throws Exception {
+        when(shelterPetService.findSheltersPetByType("cat")).thenReturn(sheltersPetList);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(URL2 + "/list/cat"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Tom"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].petDateOfBirth").value("2022-02-01"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(4L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].registrationDate").value("2022-06-02"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("cat"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value("MALE"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].agePhase").value("adolescent"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value("Schedule one visit to the vet per year"))
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
+        verify(shelterPetService, times(1)).findSheltersPetByType("cat");
+    }
+
+    @Test
+    void getSheltersPetByInvalidTypeTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(URL2 + "/list/mouse")
+                        .content(asJsonString(sheltersPet))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(shelterPetService, times(0)).findSheltersPetByType(null);
+    }
+
+    @Test
     void updateSheltersPetByIdCorrectParametersTest() throws Exception {
         when(shelterPetService.findSheltersPetById(sheltersPet.getId())).thenReturn(Optional.of(sheltersPet));
 
