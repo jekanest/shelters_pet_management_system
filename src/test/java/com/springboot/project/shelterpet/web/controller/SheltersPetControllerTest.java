@@ -54,7 +54,8 @@ class SheltersPetControllerTest {
 
     @BeforeEach
     public void beforeEach(){
-        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
+        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat",
+                MALE, "adolescent", "Schedule one visit to the vet per year");
         sheltersPetList = createSheltersPetList(sheltersPet);
     }
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -18,6 +19,7 @@ import java.io.Serializable;
 @ApiModel(description= "Model of SheltersPet data")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class SheltersPet implements Serializable {
 
     @ApiModelProperty(notes = "Unique shelter pet id")
@@ -63,4 +65,5 @@ public class SheltersPet implements Serializable {
 
     @ApiModelProperty(notes = "Notes for shelter pet care")
     private String description;
+
 }
