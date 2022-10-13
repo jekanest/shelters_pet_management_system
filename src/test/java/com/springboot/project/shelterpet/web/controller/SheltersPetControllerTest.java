@@ -54,7 +54,7 @@ class SheltersPetControllerTest {
 
     @BeforeEach
     public void beforeEach(){
-        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat",
+        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",8L,"2022-06-02", "cat",
                 MALE, "adolescent", "Schedule one visit to the vet per year");
         sheltersPetList = createSheltersPetList(sheltersPet);
     }
@@ -70,7 +70,7 @@ class SheltersPetControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Tom"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].petDateOfBirth").value("2022-02-01"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(4L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(8L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].registrationDate").value("2022-06-02"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("cat"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value("MALE"))
@@ -200,7 +200,7 @@ class SheltersPetControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Tom"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.petDateOfBirth").value("2022-02-01"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(4L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.age").value(8L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.registrationDate").value("2022-06-02"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.type").value("cat"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.gender").value("MALE"))
@@ -235,7 +235,7 @@ class SheltersPetControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Tom"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].petDateOfBirth").value("2022-02-01"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(4L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].age").value(8L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].registrationDate").value("2022-06-02"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("cat"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].gender").value("MALE"))

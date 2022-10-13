@@ -40,7 +40,7 @@ end;
 rule "CatSenior"
 
 when
-sheltersPetObject : SheltersPet(type == "cat" && age > 144);
+sheltersPetObject : SheltersPet(type == "cat" && age >= 144);
 then
 sheltersPetObject.setAgePhase("senior");
 sheltersPetObject.setDescription("Should be changed food and vitamins added");

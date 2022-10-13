@@ -98,7 +98,7 @@ public class SheltersPetServiceImpl implements ShelterPetService {
 
     public int calculateAgeOfTheShelterPet(LocalDate dateOfBirth, LocalDate currentDate) {
         Period calculateAgeOfTheShelterPet = Period.between(dateOfBirth, currentDate);
-        return calculateAgeOfTheShelterPet.getMonths();
+        return (calculateAgeOfTheShelterPet.getYears()*12) + (calculateAgeOfTheShelterPet.getMonths());
     }
 
     public boolean anyMatch (SheltersPet sheltersPet) {

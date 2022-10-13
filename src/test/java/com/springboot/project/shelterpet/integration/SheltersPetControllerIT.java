@@ -1,4 +1,4 @@
-package com.springboot.project.shelterpet.web.controller;
+package com.springboot.project.shelterpet.integration;
 
 import com.springboot.project.shelterpet.SheltersPetApplication;
 import com.springboot.project.shelterpet.business.service.ShelterPetService;
@@ -34,9 +34,9 @@ public class SheltersPetControllerIT {
                 "    {\n" +
                 "        \"id\": 1,\n" +
                 "        \"name\": \"Lucky\",\n" +
-                "        \"petDateOfBirth\": \"2022-05-01\",\n" +
+                "        \"petDateOfBirth\": \"2022-09-01\",\n" +
                 "        \"age\": 1,\n" +
-                "        \"registrationDate\": \"2022-05-22\",\n" +
+                "        \"registrationDate\": \"2022-09-22\",\n" +
                 "        \"type\": \"dog\",\n" +
                 "        \"gender\": \"FEMALE\",\n" +
                 "        \"agePhase\": \"pup\",\n" +
@@ -46,7 +46,7 @@ public class SheltersPetControllerIT {
                 "        \"id\": 2,\n" +
                 "        \"name\": \"Pirate\",\n" +
                 "        \"petDateOfBirth\": \"2020-08-01\",\n" +
-                "        \"age\": 34,\n" +
+                "        \"age\": 26,\n" +
                 "        \"registrationDate\": \"2021-09-15\",\n" +
                 "        \"type\": \"dog\",\n" +
                 "        \"gender\": \"MALE\",\n" +
@@ -57,7 +57,7 @@ public class SheltersPetControllerIT {
                 "        \"id\": 3,\n" +
                 "        \"name\": \"Minka\",\n" +
                 "        \"petDateOfBirth\": \"2018-03-01\",\n" +
-                "        \"age\": 51,\n" +
+                "        \"age\": 55,\n" +
                 "        \"registrationDate\": \"2020-05-06\",\n" +
                 "        \"type\": \"cat\",\n" +
                 "        \"gender\": \"FEMALE\",\n" +
@@ -68,7 +68,7 @@ public class SheltersPetControllerIT {
                 "        \"id\": 4,\n" +
                 "        \"name\": \"Brave\",\n" +
                 "        \"petDateOfBirth\": \"2013-10-01\",\n" +
-                "        \"age\": 104,\n" +
+                "        \"age\": 108,\n" +
                 "        \"registrationDate\": \"2019-03-09\",\n" +
                 "        \"type\": \"dog\",\n" +
                 "        \"gender\": \"FEMALE\",\n" +
@@ -79,7 +79,7 @@ public class SheltersPetControllerIT {
                 "        \"id\": 5,\n" +
                 "        \"name\": \"Zara\",\n" +
                 "        \"petDateOfBirth\": \"2022-01-01\",\n" +
-                "        \"age\": 5,\n" +
+                "        \"age\": 9,\n" +
                 "        \"registrationDate\": \"2022-06-02\",\n" +
                 "        \"type\": \"dog\",\n" +
                 "        \"gender\": \"FEMALE\",\n" +
@@ -98,8 +98,8 @@ public class SheltersPetControllerIT {
     @Test
     @Order(2)
     void getPetByIdIT() throws JSONException {
-        String expected = "{\"id\":1,\"name\":\"Lucky\",\"petDateOfBirth\":\"2022-05-01\",\"age\":1," +
-                "\"registrationDate\":\"2022-05-22\",\"type\":\"dog\",\"gender\":\"FEMALE\",\"agePhase\":\"pup\"," +
+        String expected = "{\"id\":1,\"name\":\"Lucky\",\"petDateOfBirth\":\"2022-09-01\",\"age\":1," +
+                "\"registrationDate\":\"2022-09-22\",\"type\":\"dog\",\"gender\":\"FEMALE\",\"agePhase\":\"pup\"," +
                 "\"description\":\"Follow the list of required vaccination\"}";
 
         ResponseEntity<String> response = restTemplate.getForEntity(
@@ -113,7 +113,7 @@ public class SheltersPetControllerIT {
     @Order(3)
     void getPetByTypeIT() throws JSONException {
         String expected = "[{\"id\":3,\"name\":\"Minka\",\"petDateOfBirth\":\"2018-03-01\"," +
-                "\"age\":51,\"registrationDate\":\"2020-05-06\",\"type\":\"cat\",\"gender\":\"FEMALE\"," +
+                "\"age\":55,\"registrationDate\":\"2020-05-06\",\"type\":\"cat\",\"gender\":\"FEMALE\"," +
                 "\"agePhase\":\"productive years\",\"description\":\"Schedule one visit to the vet per year\"}]";
 
         ResponseEntity<String> response = restTemplate.getForEntity(
@@ -126,11 +126,11 @@ public class SheltersPetControllerIT {
     @Test
     @Order(4)
     void postPetIT() throws JSONException {
-        SheltersPet sheltersPet = new SheltersPet(6L, "Tom", "2018-04-01", 5L, "2022-06-02", "cat",
-                MALE, "adolescent", "Schedule one visit to the vet per year");
+        SheltersPet sheltersPet = new SheltersPet(6L, "Tom", "2015-08-01", 86L, "2021-05-15", "cat",
+                MALE, "productive years", "Schedule one visit to the vet per year");
 
-        String expected = "{\"id\":6,\"name\":\"Tom\",\"petDateOfBirth\":\"2018-04-01\",\"age\":5," +
-                "\"registrationDate\":\"2022-06-02\",\"type\":\"cat\",\"gender\":\"MALE\",\"agePhase\":\"adolescent\"," +
+        String expected = "{\"id\":6,\"name\":\"Tom\",\"petDateOfBirth\":\"2015-08-01\",\"age\":86," +
+                "\"registrationDate\":\"2021-05-15\",\"type\":\"cat\",\"gender\":\"MALE\",\"agePhase\":\"productive years\"," +
                 "\"description\":\"Schedule one visit to the vet per year\"}";
 
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -148,10 +148,10 @@ public class SheltersPetControllerIT {
     @Test
     @Order(5)
     void updateSheltersPetIT() throws JSONException {
-        SheltersPet sheltersPet = new SheltersPet(6L, "Sam", "2016-04-18", 4L, "2022-09-14", "dog",
+        SheltersPet sheltersPet = new SheltersPet(6L, "Sam", "2022-04-18", 5L, "2022-09-14", "dog",
                 MALE, "pup", "Follow the list of required vaccination");
 
-        String expected = "{\"id\":6,\"name\":\"Sam\",\"petDateOfBirth\":\"2016-04-18\",\"age\":4," +
+        String expected = "{\"id\":6,\"name\":\"Sam\",\"petDateOfBirth\":\"2022-04-18\",\"age\":5," +
                 "\"registrationDate\":\"2022-09-14\",\"type\":\"dog\",\"gender\":\"MALE\",\"agePhase\":\"pup\"," +
                 "\"description\":\"Follow the list of required vaccination\"}";
 

@@ -61,8 +61,8 @@ class SheltersPetServiceImplTest {
 
     @BeforeEach
     public void beforeEach(){
-        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE,"adolescent", "Schedule one visit to the vet per year");
-        sheltersPetDAO = createSheltersPetDAO(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
+        sheltersPet = createSheltersPet(1L,"Tom", "2022-02-01",8L,"2022-06-02", "cat", MALE,"adolescent", "Schedule one visit to the vet per year");
+        sheltersPetDAO = createSheltersPetDAO(1L,"Tom", "2022-02-01",8L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
         sheltersPetDAOList = createSheltersPetDAOList(sheltersPetDAO);
     }
 
@@ -102,7 +102,7 @@ class SheltersPetServiceImplTest {
 
     @Test
     void saveSheltersPetParametersConflictTest() {
-        SheltersPet sheltersPetSaved = createSheltersPet(1L,"Tom", "2022-02-01",4L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
+        SheltersPet sheltersPetSaved = createSheltersPet(1L,"Tom", "2022-02-01",8L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
         when(sheltersPetRepository.findAll()).thenReturn(sheltersPetDAOList);
         assertThrows(HttpClientErrorException.class, () -> sheltersPetService.saveSheltersPet(sheltersPetSaved));
         verify(sheltersPetRepository, times(0)).save(sheltersPetDAO);
@@ -110,7 +110,7 @@ class SheltersPetServiceImplTest {
 
     @Test
     void saveSheltersPetInvalidDateOfBirthTest() {
-        SheltersPet sheltersPetSaved = createSheltersPet(1L,"Tom", "2028-02-01",4L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
+        SheltersPet sheltersPetSaved = createSheltersPet(1L,"Tom", "2028-02-01",8L,"2022-06-02", "cat", MALE, "adolescent", "Schedule one visit to the vet per year");
         when(sheltersPetRepository.findAll()).thenReturn(sheltersPetDAOList);
         assertThrows(Exception.class, () -> sheltersPetService.saveSheltersPet(sheltersPetSaved));
         verify(sheltersPetRepository, times(0)).save(sheltersPetDAO);
